@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://perplexia.onrender.com";
+const API_URL = "http://localhost:8000";
 
 // Track token refresh state
 let isRefreshing = false;
@@ -191,6 +191,8 @@ export const pdfApi = {
         data: Array.isArray(response.data) ? response.data : [],
       };
     }),
+  getMindmap: (pdfId: number) =>
+    api.get(`/pdf/mindmap/${pdfId}`).then((response) => response.data),
 };
 
 export const userApi = {

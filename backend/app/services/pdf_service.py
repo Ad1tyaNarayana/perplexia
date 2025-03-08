@@ -11,6 +11,7 @@ from sqlalchemy import select
 from app.core.database import NeonAsyncSessionLocal
 
 from app.services import embedding_service
+from app.services.gemini_service import generate_mindmap_with_gemini
 
 logger = logging.getLogger(__name__)
 
@@ -46,14 +47,20 @@ async def process_pdf_and_store(file: UploadFile, user_id: int, db: Session):
 
         if not sanitized_text.strip():
             raise HTTPException(status_code=400, detail="No text found in the PDF")
+        
+        mindmap = await generate_mindmap_with_gemini(sanitized_text, file.filename)
+
+        print(mindmap)
 
         # Store PDF Document metadata in PostgreSQL
         pdf_document_db = db_models.PDFDocument(
             user_id=user_id, 
             filename=file.filename,
             file_size=len(pdf_bytes),
-            page_count=len(reader.pages)
+            page_count=len(reader.pages),
+            mindmap=mindmap,
         )
+
         db.add(pdf_document_db)
         await db.commit()
         await db.refresh(pdf_document_db)
@@ -152,4 +159,4 @@ async def list_user_pdfs_handler(current_user: db_models.User, db: Session) -> l
         .filter(db_models.PDFDocument.user_id == current_user.id)
     )
     pdfs = pdfs.scalars().all()
-    return [{"id": pdf.id, "filename": pdf.filename, "upload_date": pdf.upload_date} for pdf in pdfs]
+    return [{"id": pdf.id, "filename": pdf.filename, "upload_date": pdf.upload_date, "mindmap": pdf.mindmap} for pdf in pdfs]

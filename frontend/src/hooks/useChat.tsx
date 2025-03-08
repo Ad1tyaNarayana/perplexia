@@ -172,22 +172,19 @@ export function useChat(initialSessionId?: number) {
         }
 
         // Use fetch to send request with streaming
-        const response = await fetch(
-          `https://perplexia.onrender.com/chat/stream`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("clerk-token")}`,
-            },
-            body: JSON.stringify({
-              query: message,
-              isSearchMode: isSearchMode,
-              session_id: sessionId,
-            }),
-            signal: abortController.current.signal,
-          }
-        );
+        const response = await fetch(`http://localhost:8000/chat/stream`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("clerk-token")}`,
+          },
+          body: JSON.stringify({
+            query: message,
+            isSearchMode: isSearchMode,
+            session_id: sessionId,
+          }),
+          signal: abortController.current.signal,
+        });
 
         // Process the streaming response
         const reader = response.body?.getReader();

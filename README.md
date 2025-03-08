@@ -1,6 +1,6 @@
-# Perplexia
+# Perplexia Education Edition
 
-Perplexia is an AI-powered RAG chat application that enhances conversations with real-time web search and document processing capabilities.
+Perplexia Education Edition is an AI-powered RAG chat application that enhances Learning with real-time web search and document processing capabilities.
 
 ## ✨ Features
 
@@ -8,6 +8,9 @@ Perplexia is an AI-powered RAG chat application that enhances conversations with
 - **Web Search Mode** – Toggle search mode to receive responses backed by real-time web data.
 - **Source Citations** – Verify information with direct links to the sources used.
 - **PDF Document Processing** – Upload PDFs and interact with their contents via chat.
+- **Mind Maps** – Mind Maps for each PDF to learn visually.
+- **Progress Tracker** – Track Progress of learning through uploaded PDFS.
+- **Dynamic PDF based Quizzes** – Dynamic quizzes to test your knowledge.
 - **User Authentication** – Secure account management powered by Clerk.
 - **Session Management** – Create, rename, and manage multiple chat sessions.
 - **Responsive Design** – Sleek, modern UI optimized for all devices.

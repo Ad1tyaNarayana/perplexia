@@ -12,6 +12,7 @@ from app.core.database import NeonAsyncSessionLocal
 
 from app.services import embedding_service
 from app.services.gemini_service import generate_mindmap_with_gemini
+from app.services.education_service import generate_pdf_summary, generate_quiz_for_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +50,7 @@ async def process_pdf_and_store(file: UploadFile, user_id: int, db: Session):
             raise HTTPException(status_code=400, detail="No text found in the PDF")
         
         mindmap = await generate_mindmap_with_gemini(sanitized_text, file.filename)
-
-        print(mindmap)
+        pdf_summary = await generate_pdf_summary(sanitized_text, file.filename)
 
         # Store PDF Document metadata in PostgreSQL
         pdf_document_db = db_models.PDFDocument(
@@ -59,6 +59,7 @@ async def process_pdf_and_store(file: UploadFile, user_id: int, db: Session):
             file_size=len(pdf_bytes),
             page_count=len(reader.pages),
             mindmap=mindmap,
+            pdf_summary=pdf_summary
         )
 
         db.add(pdf_document_db)
@@ -66,6 +67,13 @@ async def process_pdf_and_store(file: UploadFile, user_id: int, db: Session):
         await db.refresh(pdf_document_db)
 
         pdf_id = pdf_document_db.id  # Save ID before any potential rollback
+
+        # Generate quiz after DB commit so we have the PDF ID
+        try:
+            await generate_quiz_for_pdf(sanitized_text, pdf_id, db)
+        except Exception as e:
+            logger.error(f"Quiz generation failed: {str(e)}", exc_info=True)
+            # Don't fail the whole process if quiz generation fails
         
         # No chunking - just use the whole document text
         # Create a NeonDB session

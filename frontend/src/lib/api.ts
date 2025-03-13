@@ -191,8 +191,6 @@ export const pdfApi = {
         data: Array.isArray(response.data) ? response.data : [],
       };
     }),
-  getMindmap: (pdfId: number) =>
-    api.get(`/pdf/mindmap/${pdfId}`).then((response) => response.data),
 };
 
 export const userApi = {
@@ -216,6 +214,29 @@ export const authUtils = {
     const token = localStorage.getItem("clerk-token");
     return token && !isTokenExpired(token);
   },
+};
+
+export const eduApi = {
+  // Get learning progress for all PDFs in a session
+  getSessionProgress: (sessionId: number) =>
+    api.get(`/edu/progress/session/${sessionId}`),
+
+  // Submit quiz answers
+  submitQuiz: (
+    quizId: number,
+    sessionId: number,
+    answers: Record<string, number>
+  ) => api.post(`/edu/quiz/${quizId}/submit?session_id=${sessionId}`, answers),
+
+  // Mark PDF as read in a session
+  trackPdfRead: (pdfId: number, sessionId: number) =>
+    api.post(`/edu/track/${pdfId}/read?session_id=${sessionId}`),
+
+  // Get quiz for a specific PDF
+  getQuizForPdf: (pdfId: number) => api.get(`/edu/quiz/${pdfId}`),
+
+  // Get summary for a specific PDF
+  getPdfSummary: (pdfId: number) => api.get(`/edu/summary/${pdfId}`),
 };
 
 export default api;

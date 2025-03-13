@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from sqlalchemy import text
-from app.api import chat, pdfs, auth  # Import API routers
+from app.api import chat, pdfs, auth, edu  # Import API routers
 from app.core.database import engine, Base, neon_engine, NeonBase 
 import logging 
 
@@ -45,6 +45,7 @@ app.add_middleware(
 app.include_router(chat.router, prefix="/chat", tags=["Chat"])
 app.include_router(pdfs.router, prefix="/pdf", tags=["Pdf"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"]) 
+app.include_router(edu.router, prefix="/edu", tags=["Edu"]) 
 
 @app.get("/health")
 async def health_check():

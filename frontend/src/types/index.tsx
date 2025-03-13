@@ -48,3 +48,34 @@ export interface ChatRequest {
   message: string;
   session_id?: number;
 }
+
+export interface QuizQuestion {
+  id: number;
+  question_text: string;
+  question_type: string;
+  answers: QuizAnswer[];
+}
+
+export interface QuizAnswer {
+  id: number;
+  answer_text: string;
+  is_correct?: boolean;
+}
+
+export interface Quiz {
+  id: number;
+  title: string;
+  description: string;
+  pdf_document_id: number;
+  questions: QuizQuestion[];
+}
+
+export interface PdfProgress {
+  id: number;
+  filename: string;
+  has_quiz: boolean;
+  quiz_id: number | null;
+  has_read: boolean;
+  quiz_completed: boolean;
+  progress_percentage: number;
+}

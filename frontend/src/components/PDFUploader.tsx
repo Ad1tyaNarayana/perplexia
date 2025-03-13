@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { File, FileUp, Loader2, CheckCircle, Brain } from "lucide-react";
+import { File, FileUp, Loader2, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import api, { pdfApi } from "../lib/api";
 import { PdfDocument } from "../types";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../context/AuthContext";
-import { MindmapDialog } from "./MindMapDialog";
 
 interface PDFUploaderProps {
   sessionId?: number;
@@ -23,8 +22,6 @@ export function PDFUploader({ sessionId }: PDFUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [mindmapDialogOpen, setMindmapDialogOpen] = useState(false);
-  const [selectedMindmap, setSelectedMindmap] = useState<any>(null);
 
   // Fetch PDFs when dialog opens
   const handleOpenDialog = async () => {
@@ -181,21 +178,6 @@ export function PDFUploader({ sessionId }: PDFUploaderProps) {
     }
   };
 
-  const openMindmap = async (pdf: PdfDocument) => {
-    try {
-      if (pdf.mindmap) {
-        setSelectedMindmap(pdf.mindmap);
-        console.log(pdf.mindmap);
-        setMindmapDialogOpen(true);
-      } else {
-        toast.error("No mindmap available for this PDF");
-      }
-    } catch (error: any) {
-      console.error("Failed to load mindmap:", error);
-      toast.error("Failed to load mindmap");
-    }
-  };
-
   // Clear error when dialog closes
   useEffect(() => {
     if (!isDialogOpen) {
@@ -313,13 +295,6 @@ export function PDFUploader({ sessionId }: PDFUploaderProps) {
                             )}
                           </Button>
                         )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openMindmap(pdf)}
-                        >
-                          <Brain />
-                        </Button>
                       </div>
                     </div>
                   );
@@ -329,12 +304,6 @@ export function PDFUploader({ sessionId }: PDFUploaderProps) {
           </div>
         </DialogContent>
       </Dialog>
-
-      <MindmapDialog
-        open={mindmapDialogOpen}
-        onOpenChange={setMindmapDialogOpen}
-        mindmap={selectedMindmap}
-      />
     </>
   );
 }

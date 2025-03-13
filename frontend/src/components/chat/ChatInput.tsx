@@ -2,9 +2,10 @@
 import { useState, KeyboardEvent, FormEvent } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { Send, Loader2, Globe } from "lucide-react";
+import { Send, Loader2, Globe, BookOpen } from "lucide-react";
 import { PDFUploader } from "../PDFUploader";
 import { ChatMessage } from "@/types";
+import { ProgressTracker } from "../education/ProgressTracker";
 
 interface ChatInputProps {
   messages: ChatMessage[];
@@ -24,6 +25,7 @@ export function ChatInput({
   toggleSearchMode,
 }: ChatInputProps) {
   const [message, setMessage] = useState("");
+  const [progressDialogOpen, setProgressDialogOpen] = useState(false);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
@@ -90,8 +92,29 @@ export function ChatInput({
               )}
             </Button>
           </div>
+          {/* Progress Tracker Button */}
+          {sessionId && (
+            <Button
+              size="icon"
+              variant="outline"
+              style={{ borderRadius: "50%" }}
+              onClick={() => setProgressDialogOpen(true)}
+              className="hover:bg-blue-800 hover:cursor-pointer"
+              title="Learning Progress"
+            >
+              <BookOpen className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </form>
+      {/* Add the ProgressTracker dialog */}
+      {sessionId && (
+        <ProgressTracker
+          sessionId={sessionId}
+          isOpen={progressDialogOpen}
+          onOpenChange={setProgressDialogOpen}
+        />
+      )}
     </div>
   );
 }

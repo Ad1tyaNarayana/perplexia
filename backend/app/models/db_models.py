@@ -55,10 +55,12 @@ class PDFDocument(Base):
     file_size = Column(Integer)      
     page_count = Column(Integer)     
     mindmap = Column(postgresql.JSONB(astext_type=Text), nullable=True)
+    pdf_summary = Column(Text, nullable=True)
 
     user = relationship("User", back_populates="pdf_documents")
     pdf_chunks = relationship("PDFChunk", back_populates="pdf_document")
     chat_sessions_assoc = relationship("ChatSessionPDF", back_populates="pdf_document")
+    quizzes = relationship("Quiz", back_populates="pdf_document", cascade="all, delete-orphan")
 
 class PDFChunk(Base):
     __tablename__ = "pdf_chunks_metadata" # Renamed to avoid conflict with NeonDB table name
@@ -90,3 +92,66 @@ class DocumentChunk(NeonBase):
     embedding = Column(Vector(768))
     document_metadata = Column(postgresql.JSONB(astext_type=Text))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Quiz(Base):
+    __tablename__ = "quizzes"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    pdf_document_id = Column(Integer, ForeignKey("pdf_documents.id"))
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    pdf_document = relationship("PDFDocument", back_populates="quizzes")
+    questions = relationship("QuizQuestion", back_populates="quiz", cascade="all, delete-orphan")
+
+class QuizQuestion(Base):
+    __tablename__ = "quiz_questions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"))
+    question_text = Column(Text, nullable=False)
+    question_type = Column(String, default="multiple_choice")  # multiple_choice, true_false, short_answer
+    
+    quiz = relationship("Quiz", back_populates="questions")
+    answers = relationship("QuizAnswer", back_populates="question", cascade="all, delete-orphan")
+
+class QuizAnswer(Base):
+    __tablename__ = "quiz_answers"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    question_id = Column(Integer, ForeignKey("quiz_questions.id"))
+    answer_text = Column(Text, nullable=False)
+    is_correct = Column(Boolean, default=False)
+    
+    question = relationship("QuizQuestion", back_populates="answers")
+
+class UserQuizSubmission(Base):
+    __tablename__ = "user_quiz_submissions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"))
+    chat_session_id = Column(Integer, ForeignKey("chat_sessions.id"))
+    score = Column(Float)
+    completed_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    user = relationship("User")
+    quiz = relationship("Quiz")
+    chat_session = relationship("ChatSession")
+
+class UserProgress(Base):
+    __tablename__ = "user_progress"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    pdf_document_id = Column(Integer, ForeignKey("pdf_documents.id"))
+    chat_session_id = Column(Integer, ForeignKey("chat_sessions.id"))
+    has_read = Column(Boolean, default=False)
+    quiz_completed = Column(Boolean, default=False)
+    progress_percentage = Column(Float, default=0.0)
+    last_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    
+    user = relationship("User")
+    pdf_document = relationship("PDFDocument")
+    chat_session = relationship("ChatSession")

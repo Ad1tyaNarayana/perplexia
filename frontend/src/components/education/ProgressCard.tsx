@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Progress } from "../ui/progress";
 import { Button } from "../ui/button";
 import { eduApi } from "../../lib/api";
 import { QuizDialog } from "./QuizDialog";
@@ -23,6 +22,7 @@ interface ProgressCardProps {
     has_read: boolean;
     quiz_completed: boolean;
     progress_percentage: number;
+    quiz_score?: number;
     mindmap?: JSON;
     summary?: string;
   };
@@ -39,7 +39,8 @@ export function ProgressCard({
   const [markingAsRead, setMarkingAsRead] = useState(false);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isMindmapOpen, setIsMindmapOpen] = useState(false);
-  const [selectedMindmap, setSelectedMindmap] = useState<any>(null);
+
+  const isPerfectScore = pdf.quiz_score === 100;
 
   const markAsRead = async () => {
     try {
@@ -55,51 +56,11 @@ export function ProgressCard({
     }
   };
 
-  const openMindmap = async () => {
-    try {
-      // Track that the PDF has been read when mindmap is opened
-      try {
-        await eduApi.trackPdfRead(pdf.id, sessionId);
-        onProgressUpdate();
-      } catch (err) {
-        console.error("Failed to track PDF read:", err);
-      }
-
-      if (pdf.mindmap) {
-        setSelectedMindmap(pdf.mindmap);
-        setIsMindmapOpen(true);
-      } else {
-        toast.error("No mindmap available for this PDF");
-      }
-    } catch (error) {
-      console.error("Failed to load mindmap:", error);
-      toast.error("Failed to load mindmap");
-    }
-  };
-
-  const openSummary = async () => {
-    // Track that the PDF has been read when summary is opened
-    try {
-      await eduApi.trackPdfRead(pdf.id, sessionId);
-      onProgressUpdate();
-    } catch (err) {
-      console.error("Failed to track PDF read:", err);
-    }
-
-    setIsSummaryOpen(true);
-  };
-
   return (
     <div className="bg-[#191a1a] p-3 rounded-md border border-gray-800">
       <h4 className="font-medium text-sm mb-1 truncate" title={pdf.filename}>
         {pdf.filename}
       </h4>
-
-      <Progress
-        value={pdf.progress_percentage}
-        max={100}
-        className="h-2 mb-3"
-      />
 
       <div className="text-xs text-gray-400 mb-3">
         Progress: {Math.round(pdf.progress_percentage)}%
@@ -110,7 +71,7 @@ export function ProgressCard({
           <Button
             size="sm"
             variant="outline"
-            className="text-xs flex-1"
+            className="text-xs col-span-2 cursor-pointer"
             onClick={markAsRead}
             disabled={markingAsRead}
           >
@@ -138,8 +99,8 @@ export function ProgressCard({
         <Button
           size="sm"
           variant="outline"
-          className="text-xs"
-          onClick={openSummary}
+          className="text-xs cursor-pointer"
+          onClick={() => setIsSummaryOpen(true)}
         >
           <FileText className="h-3 w-3 mr-1" />
           Summary
@@ -148,8 +109,8 @@ export function ProgressCard({
         <Button
           size="sm"
           variant="outline"
-          className="text-xs"
-          onClick={openMindmap}
+          className="text-xs cursor-pointer"
+          onClick={() => setIsMindmapOpen(true)}
         >
           <Brain className="h-3 w-3 mr-1" />
           Mindmap
@@ -163,12 +124,12 @@ export function ProgressCard({
               pdf.quiz_completed
                 ? "bg-blue-900/20 border-blue-800 text-blue-400"
                 : ""
-            }`}
+            } cursor-pointer`}
             onClick={() => setIsQuizOpen(true)}
-            disabled={pdf.quiz_completed}
+            disabled={isPerfectScore}
           >
             <BrainCircuit className="h-3 w-3 mr-1" />
-            {pdf.quiz_completed ? "Completed" : "Take Quiz"}
+            {isPerfectScore ? "100%" : "Take Quiz"}
           </Button>
         )}
       </div>
@@ -183,6 +144,7 @@ export function ProgressCard({
           onQuizCompleted={onProgressUpdate}
         />
       )}
+
       <SummaryDialog
         open={isSummaryOpen}
         onOpenChange={setIsSummaryOpen}
@@ -194,7 +156,7 @@ export function ProgressCard({
       <MindmapDialog
         open={isMindmapOpen}
         onOpenChange={setIsMindmapOpen}
-        mindmap={selectedMindmap}
+        mindmap={pdf.mindmap}
       />
     </div>
   );

@@ -119,6 +119,35 @@ async def generate_quiz_for_pdf(text: str, pdf_id: int, db) -> dict:
         logger.error(f"Error generating quiz: {str(e)}", exc_info=True)
         raise
 
+# First, let's add a function to initialize progress when a PDF is added to a session
+async def initialize_progress(user_id: int, pdf_id: int, session_id: int, db) -> None:
+    """Initialize progress tracking when a PDF is added to a session."""
+    from sqlalchemy import select
+    
+    # Check if progress entry already exists
+    stmt = select(db_models.UserProgress).where(
+        db_models.UserProgress.user_id == user_id,
+        db_models.UserProgress.pdf_document_id == pdf_id,
+        db_models.UserProgress.chat_session_id == session_id
+    )
+    
+    result = await db.execute(stmt)
+    progress = result.scalar_one_or_none()
+    
+    # Only create new entry if none exists
+    if not progress:
+        progress = db_models.UserProgress(
+            user_id=user_id,
+            pdf_document_id=pdf_id,
+            chat_session_id=session_id,
+            has_read=False,
+            quiz_completed=False,
+            progress_percentage=0.0  # Start at 0%
+        )
+        db.add(progress)
+        await db.commit()
+
+# Now fix the existing track_pdf_opened_in_session function
 async def track_pdf_opened_in_session(user_id: int, pdf_id: int, session_id: int, db) -> None:
     """Track that a user has opened a PDF in a specific session."""
     from sqlalchemy import select
@@ -133,24 +162,37 @@ async def track_pdf_opened_in_session(user_id: int, pdf_id: int, session_id: int
     result = await db.execute(stmt)
     progress = result.scalar_one_or_none()
     
+    # Check if there's a quiz for this PDF
+    quiz_stmt = select(db_models.Quiz).where(
+        db_models.Quiz.pdf_document_id == pdf_id
+    )
+    quiz_result = await db.execute(quiz_stmt)
+    has_quiz = quiz_result.scalar_one_or_none() is not None
+    
     if progress:
         # Update existing progress
         progress.has_read = True
-        if not progress.quiz_completed:
-            progress.progress_percentage = 50.0  # Reading is 50% of progress
+        
+        # FIXED: Always set to 50% if there's a quiz, otherwise 100%
+        if has_quiz:
+            progress.progress_percentage = 50.0
+        else:
+            progress.progress_percentage = 100.0
     else:
         # Create new progress entry
+        progress_value = 50.0 if has_quiz else 100.0
         progress = db_models.UserProgress(
             user_id=user_id,
             pdf_document_id=pdf_id,
             chat_session_id=session_id,
             has_read=True,
-            progress_percentage=50.0
+            progress_percentage=progress_value
         )
         db.add(progress)
     
     await db.commit()
 
+# And fix the submit_quiz function
 async def submit_quiz(user_id: int, quiz_id: int, session_id: int, answers: dict, db) -> dict:
     """Process quiz submission and update progress."""
     from sqlalchemy import select
@@ -213,19 +255,19 @@ async def submit_quiz(user_id: int, quiz_id: int, session_id: int, answers: dict
     
     if progress:
         progress.quiz_completed = True
-        # If they've read the document, they get 50% + (quiz score / 2)
-        # If they haven't read it, they just get quiz score / 2
-        base_progress = 50.0 if progress.has_read else 0.0
-        progress.progress_percentage = base_progress + (score / 2)
+        # FIXED: Always set to 100% when quiz is completed, regardless of score
+        # This assumes they've read it too
+        progress.has_read = True
+        progress.progress_percentage = 100.0
     else:
         # Create new progress entry if it doesn't exist
         progress = db_models.UserProgress(
             user_id=user_id,
             pdf_document_id=pdf_id,
             chat_session_id=session_id,
-            has_read=False,
+            has_read=True,  # Assume they've read it if they completed the quiz
             quiz_completed=True,
-            progress_percentage=score / 2  # Quiz is 50% of progress
+            progress_percentage=100.0  # Quiz completed = 100%
         )
         db.add(progress)
     

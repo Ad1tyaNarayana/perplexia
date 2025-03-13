@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models import db_models
-from sqlalchemy import and_, select
+from sqlalchemy import and_, func, select
 from app.api import auth
 from app.services import education_service
 import logging
@@ -181,7 +181,7 @@ async def get_session_progress(
     if not session:
         raise HTTPException(status_code=404, detail="Chat session not found")
     
-    # Get all PDFs associated with the session, including their mindmap and summary
+    # Get all PDFs associated with the session, even those without progress
     query = (
         select(
             db_models.PDFDocument, 
@@ -208,30 +208,61 @@ async def get_session_progress(
     result = await db.execute(query)
     rows = result.all()
     
-    # Get relevant quizzes for these PDFs
+    # Extract PDF IDs for further queries
     pdf_ids = [row[0].id for row in rows]
+    
+    if not pdf_ids:
+        return []  # No PDFs found, return empty list
+    
+    # Get all quizzes for these PDFs in a single query
     quizzes_query = select(db_models.Quiz).where(db_models.Quiz.pdf_document_id.in_(pdf_ids))
     quizzes_result = await db.execute(quizzes_query)
     quizzes = {quiz.pdf_document_id: quiz for quiz in quizzes_result.scalars().all()}
     
+    # Get all quiz scores in a single query instead of querying for each PDF
+    quiz_ids = [quiz.id for quiz in quizzes.values()]
+    if quiz_ids:
+        scores_query = (
+            select(
+                db_models.UserQuizSubmission.quiz_id,
+                func.max(db_models.UserQuizSubmission.score).label("max_score")
+            )
+            .where(
+                db_models.UserQuizSubmission.quiz_id.in_(quiz_ids),
+                db_models.UserQuizSubmission.user_id == current_user.id,
+                db_models.UserQuizSubmission.chat_session_id == session_id
+            )
+            .group_by(db_models.UserQuizSubmission.quiz_id)
+        )
+        scores_result = await db.execute(scores_query)
+        quiz_scores = {row.quiz_id: row.max_score for row in scores_result}
+    else:
+        quiz_scores = {}
+    
+    # Build the response data
     progress_data = []
+    
     for pdf, progress in rows:
-        quiz_id = None
-        has_quiz = False
-        quiz_completed = False
+        # Determine quiz information
+        has_quiz = pdf.id in quizzes
+        quiz_id = quizzes[pdf.id].id if has_quiz else None
+        quiz_score = None
         
-        if pdf.id in quizzes:
-            has_quiz = True
-            quiz_id = quizzes[pdf.id].id
+        # Get score if available
+        if quiz_id and quiz_id in quiz_scores:
+            quiz_score = quiz_scores[quiz_id]
         
+        # Get progress information
         if progress:
             quiz_completed = progress.quiz_completed or False
             has_read = progress.has_read or False
             progress_percentage = progress.progress_percentage or 0
         else:
             has_read = False
+            quiz_completed = False
             progress_percentage = 0
-        
+
+        # Add to response data
         progress_data.append({
             "id": pdf.id,
             "filename": pdf.filename,
@@ -240,7 +271,8 @@ async def get_session_progress(
             "has_read": has_read,
             "quiz_completed": quiz_completed,
             "progress_percentage": progress_percentage,
-            "mindmap": pdf.mindmap, 
+            "quiz_score": quiz_score,
+            "mindmap": pdf.mindmap,
             "summary": pdf.pdf_summary
         })
     

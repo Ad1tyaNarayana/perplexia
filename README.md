@@ -51,8 +51,6 @@ Perplexia Education Edition is an AI-powered RAG chat application that enhances 
 
 ### Backend Setup
 
-`bash
-
 # Clone the repository
 ```
 git clone https://github.com/Ad1tyaNarayana/perplexia.git

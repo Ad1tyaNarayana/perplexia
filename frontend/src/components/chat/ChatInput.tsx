@@ -2,7 +2,7 @@
 import { useState, KeyboardEvent, FormEvent } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { Send, Loader2, Globe } from "lucide-react";
+import { Loader2, BookOpen } from "lucide-react";
 import { PDFUploader } from "../PDFUploader";
 import { ChatMessage } from "@/types";
 
@@ -42,7 +42,7 @@ export function ChatInput({
 
   return (
     <div
-      className={`bg-[#191a1a] p-4 pt-2 w-full max-w-3xl  ${
+      className={`p-4 pt-2 w-full max-w-3xl backdrop-blur-xs md:backdrop-blur-none  ${
         messages.length ? "fixed bottom-0" : ""
       }`}
     >
@@ -52,18 +52,16 @@ export function ChatInput({
             <PDFUploader sessionId={sessionId} />
             <Button
               size="icon"
-              variant="outline"
+              variant="blue_button_GB"
               style={{ borderRadius: "50%" }}
               onClick={toggleSearchMode}
-              className={`${
+              className={`hover:cursor-pointer w-9 h-9 min-md:w-10 min-md:h-10 ${
                 isSearchMode
-                  ? "bg-sky-600 hover:bg-sky-600/70"
+                  ? "bg-sky-600 ring-2 ring-emerald-300 hover:bg-sky-600/70 scale-105"
                   : "hover:bg-sky-600"
-              } hover:cursor-pointer`}
+              }`}
             >
-              <Globe
-                className={`h-4 w-4 ${isSearchMode ? "text-slate-100" : ""}`}
-              />
+              <img src="/world.svg" className="w-7 h-7 min-md:w-8 min-md:h-8" />
             </Button>
           </div>
 
@@ -73,7 +71,7 @@ export function ChatInput({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="max-h-44 h-full resize-none pr-12"
+              className="max-h-44 h-full resize-none pr-12 text-black"
               disabled={isLoading}
             />
             <Button
@@ -81,12 +79,20 @@ export function ChatInput({
               type="submit"
               variant="ghost"
               disabled={isLoading || !message.trim()}
-              className="absolute bottom-1 right-1 "
+              className="absolute bottom-1 right-1"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Send className="h-4 w-4" />
+                <div
+                  style={{
+                    backgroundImage: `url(${window.location.origin}/arrow_button_GB.png)`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                  className="h-9 w-9"
+                ></div>
               )}
             </Button>
           </div>

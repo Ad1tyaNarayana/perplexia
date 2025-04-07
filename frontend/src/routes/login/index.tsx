@@ -22,8 +22,7 @@ function LoginPage() {
         <SignIn
           path="/login"
           routing="path"
-          signInUrl="/register"
-          fallbackRedirectUrl="/"
+          signInUrl="/login"
           appearance={{
             baseTheme: dark,
             variables: {

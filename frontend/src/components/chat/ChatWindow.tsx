@@ -30,7 +30,7 @@ export function ChatWindow({
 
   return (
     <div className="flex h-full w-full flex-col items-center">
-      <div className="flex-1 w-full max-w-3xl">
+      <div className="flex-1 w-full max-w-3xl bg-white/5">
         {messages.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <div className="max-w-md text-center">
@@ -42,12 +42,10 @@ export function ChatWindow({
           </div>
         ) : (
           <>
-            <div className="h-12 lg:h-0 bg-neutral-800 md:bg-[#191a1a] flex justify-center p-2 fixed top-0 w-full max-w-3xl z-10">
-              <h2 className="text-2xl lg:hidden font-semibold font-mono">
-                Perplexia
-              </h2>
+            <div className="h-12 lg:h-0 flex justify-center p-2 fixed top-0 w-full max-w-3xl z-10 backdrop-blur-xs md:backdrop-blur-none">
+              <h2 className="text-2xl lg:hidden font-semibold">Perplexia</h2>
             </div>
-            <div className="w-full mb-24 mt-12 lg:mt-4">
+            <div className="w-full mb-24 mt-12 lg:mt-4 text-slate-900 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.2)]">
               {messages.map((message) => (
                 <ChatMessageComponent key={message.id} message={message} />
               ))}

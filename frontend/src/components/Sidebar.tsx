@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -91,7 +91,7 @@ export function Sidebar({
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:w-64 lg:flex-col">
+      <div className="hidden lg:flex lg:w-64 lg:flex-col pl-1">
         <SidebarContent
           sessions={sessions}
           onCreateSession={onCreateSession}
@@ -165,15 +165,21 @@ function SidebarContent({
 
   return (
     <div
-      className={`flex flex-col overflow-y-auto bg-background text-slate-100 p-3 bg-[#202222] font-mono ${
+      className={`flex flex-col overflow-y-auto text-slate-100 pr-4 pl-4 pt-[10%] pb-[10%] shadow-xs border-none ${
         setIsOpen ? "h-full" : ""
       } ${mobile ? "" : "h-full"} `}
+      style={{
+        backgroundImage: `url(${window.location.origin}/blue_sidebar_GB.png)`,
+        backgroundSize: "100% 100%",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       <div className="mb-4 flex items-center justify-between px-2">
-        <h2 className="text-2xl font-semibold font-mono">Perplexia</h2>
+        <h2 className="text-3xl font-semibold">Perplexia</h2>
         <div className="flex gap-2">
           <Button
-            variant="outline"
+            variant="brown_GB"
             size="icon"
             onClick={() => {
               onCreateSession();
@@ -181,7 +187,10 @@ function SidebarContent({
             }}
             className="hover:bg-neutral-700 hover:cursor-pointer"
           >
-            <Plus className="h-4 w-4" />
+            <img
+              src={`${window.location.origin}/plus.svg`}
+              className="h-8 w-8"
+            />
           </Button>
         </div>
       </div>
@@ -206,7 +215,7 @@ function SidebarContent({
                     <Button
                       size="sm"
                       className="ml-2"
-                      variant="default"
+                      variant="brown_rect_GB"
                       onClick={() => handleRename(session.id)}
                     >
                       Save
@@ -216,10 +225,10 @@ function SidebarContent({
                   <Link
                     to="/chat/$sessionId"
                     params={{ sessionId: session.id.toString() }}
-                    className={`flex items-center space-x-2 rounded-md px-3 my-2 py-2 text-sm hover:bg-neutral-700 hover:cursor-pointer
+                    className={`flex items-center space-x-2 rounded-md px-3 my-2 py-2 text-sm hover:bg-[#5898c6] hover:cursor-pointer
                       ${
                         currentSessionId === session.id
-                          ? "bg-[#191a1a] text-accent-foreground"
+                          ? "text-accent-foreground bg-[#5898c6]"
                           : "hover:bg-accent/50"
                       }`}
                     onClick={() => {
@@ -238,7 +247,7 @@ function SidebarContent({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 hover:text-green-700 hover:cursor-pointer"
+                        className="h-6 w-6 hover:text-emerald-800 hover:cursor-pointer"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -260,12 +269,26 @@ function SidebarContent({
                       open={deleteDialogOpen}
                       onOpenChange={setDeleteDialogOpen}
                     >
-                      <DialogContent className="bg-[#202222] text-slate-100 border-slate-900">
+                      <DialogContent
+                        className=" text-slate-800 border-none"
+                        style={{
+                          backgroundImage: `url(${window.location.origin}/brown_GB.png)`,
+                          backgroundSize: "100% 100%",
+                          backgroundPosition: "center",
+                          backgroundRepeat: "no-repeat",
+                        }}
+                      >
                         <DialogHeader>
-                          <DialogTitle>Delete {session.name}</DialogTitle>
+                          <DialogTitle>
+                            <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.4)]">
+                              Delete {session.name}
+                            </span>
+                          </DialogTitle>
                           <DialogDescription>
-                            Are you sure you want to delete this chat? This
-                            action cannot be undone.
+                            <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.4)]">
+                              Are you sure you want to delete this chat? This
+                              action cannot be undone.
+                            </span>
                           </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
@@ -291,43 +314,60 @@ function SidebarContent({
             </p>
           )
         ) : (
-          <Link
-            to="/login"
-            className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm hover:bg-accent/50"
-            onClick={() => {
-              if (setIsOpen) setIsOpen(false);
-            }}
-          >
-            Sign in to see your conversations
-          </Link>
+          <p className=""></p>
         )}
       </div>
 
-      <div className="mt-auto pt-4">
+      <div className="mt-auto mb-4 flex justify-center">
         {isAuthenticated ? (
           <Button
-            variant="outline"
-            className="w-full justify-start hover:bg-neutral-700 hover:cursor-pointer"
+            variant="brown_rect_GB"
+            className=" hover:bg-neutral-700 hover:cursor-pointer"
             onClick={() => signOut()}
           >
             <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
+            <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.6)]">
+              Sign Out
+            </span>
           </Button>
         ) : (
-          <Link
-            to="/login"
-            className="w-full"
-            onClick={() => {
-              if (setIsOpen) setIsOpen(false);
-            }}
-          >
-            <Button
-              variant="outline"
-              className="w-full justify-start hover:bg-neutral-700 hover:cursor-pointer"
-            >
-              Sign In
-            </Button>
-          </Link>
+          <div className="flex flex-col items-center justify-center h-full">
+            <p className="mb-4">Sign in to see your conversations</p>
+            <div className="flex flex-row gap-2">
+              <Link
+                to="/login"
+                className="w-full"
+                onClick={() => {
+                  if (setIsOpen) setIsOpen(false);
+                }}
+              >
+                <Button
+                  variant="brown_rect_GB"
+                  className="w-full hover:bg-neutral-700 hover:cursor-pointer text-lg"
+                >
+                  <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.6)]">
+                    Login In
+                  </span>
+                </Button>
+              </Link>
+              <Link
+                to="/register"
+                className="w-full"
+                onClick={() => {
+                  if (setIsOpen) setIsOpen(false);
+                }}
+              >
+                <Button
+                  variant="brown_rect_GB"
+                  className="w-full hover:bg-neutral-700 hover:cursor-pointer text-lg"
+                >
+                  <span className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.6)]">
+                    Sign Up
+                  </span>
+                </Button>
+              </Link>
+            </div>
+          </div>
         )}
       </div>
     </div>

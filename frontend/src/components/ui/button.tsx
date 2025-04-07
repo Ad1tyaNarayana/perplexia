@@ -19,6 +19,12 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        brown_GB:
+          "rounded-none text-primary-foreground shadow-xs hover:brightness-95 transition-all text-center",
+        brown_rect_GB:
+          "rounded-none text-primary-foreground shadow-xs hover:brightness-95 transition-all text-center",
+        blue_button_GB:
+          "rounded-none text-primary-foreground shadow-xs hover:brightness-95 transition-all text-center",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -39,6 +45,7 @@ function Button({
   variant,
   size,
   asChild = false,
+  style,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -46,10 +53,42 @@ function Button({
   }) {
   const Comp = asChild ? Slot : "button";
 
+  // Create a new style object that includes the background image for brown_GB variant
+  const buttonStyle =
+    variant === "brown_GB"
+      ? {
+          ...style,
+          backgroundImage: `url(${window.location.origin}/brown_button.png)`,
+          backgroundSize: "100% 100%",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundColor: "transparent",
+        }
+      : variant === "brown_rect_GB"
+      ? {
+          ...style,
+          backgroundImage: `url(${window.location.origin}/brown_rect_button.png)`,
+          backgroundSize: "100% 100%",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundColor: "transparent",
+        }
+      : variant === "blue_button_GB"
+      ? {
+          ...style,
+          backgroundImage: `url(${window.location.origin}/blue_button.png)`,
+          backgroundSize: "100% 100%",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundColor: "transparent",
+        }
+      : style;
+
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      style={buttonStyle}
       {...props}
     />
   );

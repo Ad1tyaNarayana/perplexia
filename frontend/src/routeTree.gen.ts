@@ -17,6 +17,8 @@ import { Route as RegisterIndexImport } from './routes/register/index'
 import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as ChatIndexImport } from './routes/chat/index'
 import { Route as RegisterSplatImport } from './routes/register/$'
+import { Route as LoginSsoCallbackImport } from './routes/login/sso-callback'
+import { Route as LoginFactorOneImport } from './routes/login/factor-one'
 import { Route as LoginSplatImport } from './routes/login/$'
 import { Route as ChatSessionIdImport } from './routes/chat/$sessionId'
 
@@ -55,6 +57,18 @@ const ChatIndexRoute = ChatIndexImport.update({
 const RegisterSplatRoute = RegisterSplatImport.update({
   id: '/register/$',
   path: '/register/$',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LoginSsoCallbackRoute = LoginSsoCallbackImport.update({
+  id: '/login/sso-callback',
+  path: '/login/sso-callback',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LoginFactorOneRoute = LoginFactorOneImport.update({
+  id: '/login/factor-one',
+  path: '/login/factor-one',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -102,6 +116,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginSplatImport
       parentRoute: typeof rootRoute
     }
+    '/login/factor-one': {
+      id: '/login/factor-one'
+      path: '/login/factor-one'
+      fullPath: '/login/factor-one'
+      preLoaderRoute: typeof LoginFactorOneImport
+      parentRoute: typeof rootRoute
+    }
+    '/login/sso-callback': {
+      id: '/login/sso-callback'
+      path: '/login/sso-callback'
+      fullPath: '/login/sso-callback'
+      preLoaderRoute: typeof LoginSsoCallbackImport
+      parentRoute: typeof rootRoute
+    }
     '/register/$': {
       id: '/register/$'
       path: '/register/$'
@@ -140,6 +168,8 @@ export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/chat/$sessionId': typeof ChatSessionIdRoute
   '/login/$': typeof LoginSplatRoute
+  '/login/factor-one': typeof LoginFactorOneRoute
+  '/login/sso-callback': typeof LoginSsoCallbackRoute
   '/register/$': typeof RegisterSplatRoute
   '/chat': typeof ChatIndexRoute
   '/login': typeof LoginIndexRoute
@@ -151,6 +181,8 @@ export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/chat/$sessionId': typeof ChatSessionIdRoute
   '/login/$': typeof LoginSplatRoute
+  '/login/factor-one': typeof LoginFactorOneRoute
+  '/login/sso-callback': typeof LoginSsoCallbackRoute
   '/register/$': typeof RegisterSplatRoute
   '/chat': typeof ChatIndexRoute
   '/login': typeof LoginIndexRoute
@@ -163,6 +195,8 @@ export interface FileRoutesById {
   '/$': typeof SplatRoute
   '/chat/$sessionId': typeof ChatSessionIdRoute
   '/login/$': typeof LoginSplatRoute
+  '/login/factor-one': typeof LoginFactorOneRoute
+  '/login/sso-callback': typeof LoginSsoCallbackRoute
   '/register/$': typeof RegisterSplatRoute
   '/chat/': typeof ChatIndexRoute
   '/login/': typeof LoginIndexRoute
@@ -176,6 +210,8 @@ export interface FileRouteTypes {
     | '/$'
     | '/chat/$sessionId'
     | '/login/$'
+    | '/login/factor-one'
+    | '/login/sso-callback'
     | '/register/$'
     | '/chat'
     | '/login'
@@ -186,6 +222,8 @@ export interface FileRouteTypes {
     | '/$'
     | '/chat/$sessionId'
     | '/login/$'
+    | '/login/factor-one'
+    | '/login/sso-callback'
     | '/register/$'
     | '/chat'
     | '/login'
@@ -196,6 +234,8 @@ export interface FileRouteTypes {
     | '/$'
     | '/chat/$sessionId'
     | '/login/$'
+    | '/login/factor-one'
+    | '/login/sso-callback'
     | '/register/$'
     | '/chat/'
     | '/login/'
@@ -208,6 +248,8 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   ChatSessionIdRoute: typeof ChatSessionIdRoute
   LoginSplatRoute: typeof LoginSplatRoute
+  LoginFactorOneRoute: typeof LoginFactorOneRoute
+  LoginSsoCallbackRoute: typeof LoginSsoCallbackRoute
   RegisterSplatRoute: typeof RegisterSplatRoute
   ChatIndexRoute: typeof ChatIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
@@ -219,6 +261,8 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   ChatSessionIdRoute: ChatSessionIdRoute,
   LoginSplatRoute: LoginSplatRoute,
+  LoginFactorOneRoute: LoginFactorOneRoute,
+  LoginSsoCallbackRoute: LoginSsoCallbackRoute,
   RegisterSplatRoute: RegisterSplatRoute,
   ChatIndexRoute: ChatIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
@@ -239,6 +283,8 @@ export const routeTree = rootRoute
         "/$",
         "/chat/$sessionId",
         "/login/$",
+        "/login/factor-one",
+        "/login/sso-callback",
         "/register/$",
         "/chat/",
         "/login/",
@@ -256,6 +302,12 @@ export const routeTree = rootRoute
     },
     "/login/$": {
       "filePath": "login/$.tsx"
+    },
+    "/login/factor-one": {
+      "filePath": "login/factor-one.tsx"
+    },
+    "/login/sso-callback": {
+      "filePath": "login/sso-callback.tsx"
     },
     "/register/$": {
       "filePath": "register/$.tsx"

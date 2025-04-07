@@ -192,11 +192,11 @@ export function PDFUploader({ sessionId }: PDFUploaderProps) {
         type="button"
         onClick={handleOpenDialog}
         title="Manage PDFs"
-        variant="outline"
+        variant="blue_button_GB"
         style={{ borderRadius: "50%" }}
-        className="hover:bg-neutral-700 hover:cursor-pointer"
+        className="hover:bg-neutral-700 hover:cursor-pointer w-9 h-9 min-md:w-10 min-md:h-10"
       >
-        <FileUp className="h-4 w-4" />
+        <img src="/pdf.svg" className="w-7 h-7 min-md:w-8 min-md:h-8 p-1" />
       </Button>
 
       <input
@@ -208,43 +208,53 @@ export function PDFUploader({ sessionId }: PDFUploaderProps) {
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md bg-[#202222] text-slate-100 border-slate-900">
+        <DialogContent
+          className="sm:max-w-lg border-none shadow-xs"
+          style={{
+            backgroundImage: `url(${window.location.origin}/brown_GB.png)`,
+            backgroundSize: "100% 100%",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
           <DialogHeader>
             <DialogTitle>Manage PDFs</DialogTitle>
           </DialogHeader>
 
           {error && (
-            <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">
+            <div className="bg-destructive/10 text-destructive rounded-md text-sm">
               {error}
             </div>
           )}
 
-          <div className="space-y-4">
-            <Button
-              variant="outline"
-              className="w-full relative hover:bg-neutral-700 hover:cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Uploading... {uploadProgress}%
-                  <div
-                    className="absolute left-0 bottom-0 h-1 bg-primary"
-                    style={{
-                      width: `${uploadProgress}%`,
-                      transition: "width 0.3s ease-in-out",
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  <FileUp className="mr-2 h-4 w-4" />
-                  Upload New PDF
-                </>
-              )}
-            </Button>
+          <div className="space-y-4 ">
+            <div className="flex justify-center">
+              <Button
+                variant="brown_rect_GB"
+                className="hover:bg-neutral-700 hover:cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading... {uploadProgress}%
+                    <div
+                      className="absolute left-0 bottom-0 h-1 bg-primary"
+                      style={{
+                        width: `${uploadProgress}%`,
+                        transition: "width 0.3s ease-in-out",
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <FileUp className="mr-2 h-4 w-4" />
+                    Upload New PDF
+                  </>
+                )}
+              </Button>
+            </div>
 
             <div className="max-h-72 overflow-y-auto space-y-2">
               <h3 className="text-sm font-medium mb-2">Your PDFs</h3>
@@ -270,30 +280,32 @@ export function PDFUploader({ sessionId }: PDFUploaderProps) {
                           {pdf.filename}
                         </span>
                       </div>
-                      {sessionId && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => togglePdfInSession(pdf)}
-                          className={
-                            isInSession
-                              ? "bg-green-800 hover:bg-green-900 border-none"
-                              : "hover:border-green-700"
-                          }
-                        >
-                          {isInSession ? (
-                            <>
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Active
-                            </>
-                          ) : (
-                            <>
-                              <FileUp className="h-3 w-3 mr-1" />
-                              Use
-                            </>
-                          )}
-                        </Button>
-                      )}
+                      <div className="flex gap-2">
+                        {sessionId && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => togglePdfInSession(pdf)}
+                            className={
+                              isInSession
+                                ? "bg-green-600 hover:bg-green-700 border-none"
+                                : "hover:border-green-700"
+                            }
+                          >
+                            {isInSession ? (
+                              <>
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Active
+                              </>
+                            ) : (
+                              <>
+                                <FileUp className="h-3 w-3 mr-1" />
+                                Use
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   );
                 })

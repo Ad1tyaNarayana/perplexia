@@ -106,7 +106,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
                       return isInline ? (
                         // For inline code
                         <code
-                          className="px-1 py-0.5 bg-zinc-800 rounded text-sm font-mono break-words"
+                          className="px-1 py-0.5 rounded text-sm break-words"
                           {...props}
                         >
                           {children}
@@ -146,7 +146,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => setShowSourcesDialog(true)}
-                    className="text-xs flex items-center gap-1 text-sky-500 hover:text-sky-400 bg-transparent border-sky-800/30"
+                    className="text-xs flex items-center gap-1 text-black bg-transparent border-black/30 hover:drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.4)]"
                   >
                     <Search size={12} />
                     View Sources

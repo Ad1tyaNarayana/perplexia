@@ -38,7 +38,15 @@ export function Layout({
   };
 
   return (
-    <div className="flex h-screen text-slate-100 bg-[#191a1a]">
+    <div
+      className="flex h-screen text-slate-100 relative"
+      style={{
+        backgroundImage: `url(${window.location.origin}/background_GB.png)`,
+        backgroundSize: "cover",
+        backgroundPosition: "left",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       {showSidebar && (
         <Sidebar
           sessions={sessions}

@@ -37,6 +37,9 @@
 
   --dark: #202222;
   --grey: #191a1a;
-
   --radius: 0.625rem;
+}
+
+body {
+  font-family: "Tuff W01 Bold";
 }

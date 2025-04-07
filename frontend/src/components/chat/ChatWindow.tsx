@@ -33,9 +33,9 @@ export function ChatWindow({
       <div className="flex-1 w-full max-w-3xl bg-white/5">
         {messages.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <div className="max-w-md text-center">
-              <h2 className="text-2xl font-bold">Welcome to Perplexia</h2>
-              <p className="mt-2 text-muted-foreground">
+            <div className="max-w-md text-center drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.4)]">
+              <h2 className="text-3xl font-bold">Welcome to Perplexia</h2>
+              <p className="mt-2 text-muted-foreground text-xl">
                 Start a conversation by typing a message below.
               </p>
             </div>

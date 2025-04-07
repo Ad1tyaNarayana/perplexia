@@ -2,7 +2,7 @@
 import { useState, KeyboardEvent, FormEvent } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { Loader2, BookOpen } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { PDFUploader } from "../PDFUploader";
 import { ChatMessage } from "@/types";
 

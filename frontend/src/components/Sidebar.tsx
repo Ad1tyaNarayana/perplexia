@@ -1,15 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import {
-  MessageSquare,
-  Plus,
-  Trash2,
-  Edit2,
-  LogOut,
-  PanelLeft,
-} from "lucide-react";
+import { MessageSquare, Trash2, Edit2, LogOut, PanelLeft } from "lucide-react";
 import { ChatSession } from "../types";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { useAuth } from "../context/AuthContext";

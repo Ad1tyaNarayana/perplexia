@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { SignIn } from "@clerk/clerk-react";
 import { dark } from "@clerk/themes";
-import { useEffect } from "react";
 
 export const Route = createFileRoute("/login/$")({
   component: CatchAllAuthRoute,

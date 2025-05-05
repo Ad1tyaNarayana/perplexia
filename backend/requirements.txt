@@ -11,3 +11,4 @@ python-dotenv
 pgvector
 python-multipart
 python-jose[cryptography]
+dotenv
